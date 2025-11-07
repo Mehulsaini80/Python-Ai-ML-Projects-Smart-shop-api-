@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - SmartShop AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-user-shield"></i>
+                <span>Admin Panel</span>
+            </div>
+            <div class="nav-right">
+                <span class="admin-name">
+                    <i class="fas fa-user-circle"></i>
+                    Admin
+                </span>
+                <a href="/admin/logout" class="btn-logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+                <a href="/" class="btn-home" target="_blank">
+                     <i class="fas fa-home"></i>
+                    Home
+                </a> 
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li class="menu-item active" data-tab="dashboard">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </li>
+                <li class="menu-item" data-tab="users">
+                    <i class="fas fa-users"></i>
+                    <span>Users</span>
+                </li>
+                <li class="menu-item" data-tab="products">
+                    <i class="fas fa-box"></i>
+                    <span>Products</span>
+                </li>
+                <li class="menu-item" data-tab="predictions">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Predictions</span>
+                </li> 
+                <li class="menu-item" data-tab="analytics">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Analytics</span>
+                </li>
+                <li class="menu-item" data-tab="card-generator">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Card Generator</span>
+                </li> 
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Tab -->
+<div class="tab-content active" id="dashboard">
+    <div class="content-header">
+        <h1>Dashboard Overview</h1>
+        <p>Welcome to SmartShop AI Admin Panel</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-info">
+                <h3 id="totalUsers">0</h3>
+                <p>Total Users</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-box"></i>
+            </div>
+            <div class="stat-info">
+                <h3 id="totalProducts">0</h3>
+                <p>Total Products</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="stat-info">
+                <h3 id="totalPredictions">0</h3>
+                <p>Predictions Made</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-percentage"></i>
+            </div>
+            <div class="stat-info">
+                <h3>95%</h3>
+                <p>Model Accuracy</p>
+            </div>
+        </div>
+    </div>  <!-- ⬅️ stats-grid CLOSES HERE -->
+
+    <!-- ✅ ADD RECENT PREDICTIONS HERE (AFTER stats-grid closes) -->
+    <div class="recent-section">
+        <h2>Recent Predictions</h2>
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Category</th>
+                        <th>Budget</th>
+                        <th>Platform</th>
+                        <th>Predicted Discount</th>
+                        <th>Predicted Platform</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="recentPredictions">
+                    <tr>
+                        <td colspan="7" style="text-align: center;">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+</div>  <!-- ⬅️ Dashboard tab CLOSES HERE -->
+
+            <!-- Users Tab -->
+            <div class="tab-content" id="users">
+                <div class="content-header">
+                    <h1>User Management</h1>
+                    <p>Manage registered users</p>
+                </div>
+
+                <div class="table-actions">
+                    <input type="text" id="searchUsers" placeholder="Search users..." class="search-input">
+                    <button class="btn-refresh" onclick="loadUsers()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Joined Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTable">
+                            <tr>
+                                <td colspan="5" style="text-align: center;">Loading users...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Products Tab -->
+            <div class="tab-content" id="products">
+                <div class="content-header">
+                    <h1>Product Management</h1>
+                    <p>Add, edit, or remove products</p>
+                </div>
+
+                <div class="table-actions">
+                    <input type="text" id="searchProducts" placeholder="Search products..." class="search-input">
+                    <button class="btn-add" onclick="showAddProductModal()">
+                        <i class="fas fa-plus"></i> Add Product
+                    </button>
+                    <button class="btn-refresh" onclick="loadProducts()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Platform</th>
+                                <th>Price</th>
+                                <th>Discount</th>
+                                <th>Rating</th>
+                                <th>Stock</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsTable">
+                            <tr>
+                                <td colspan="9" style="text-align: center;">Loading products...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div> 
+            </div>
+
+            <!-- Predictions Tab -->
+            <div class="tab-content" id="predictions">
+                <div class="content-header">
+                    <h1>Prediction History</h1>
+                    <p>View all predictions made by users</p>
+                </div>
+
+                <div class="table-actions">
+                    <input type="text" id="searchPredictions" placeholder="Search predictions..." class="search-input">
+                    <button class="btn-refresh" onclick="loadPredictionHistory()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>User</th>
+                                <th>Category</th>
+                                <th>Budget</th>
+                                <th>Platform</th>
+                                <th>Predicted Discount</th>
+                                <th>Predicted Platform</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="predictionsTable">
+                            <tr>
+                                <td colspan="8" style="text-align: center;">Loading predictions...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div> 
+
+            <!-- Analytics Tab -->
+            <div class="tab-content" id="analytics">
+                <div class="content-header">
+                    <h1>Analytics & Insights</h1>
+                    <p>View detailed analytics</p>
+                </div>
+
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h3>Category-wise Distribution</h3>
+                        <div id="categoryChart" class="chart-placeholder">
+                            <i class="fas fa-chart-pie"></i>
+                            <p>Loading chart data...</p>
+                        </div>
+                    </div>
+                    <div class="analytics-card">
+                        <h3>Platform-wise Distribution</h3>
+                        <div id="platformChart" class="chart-placeholder">
+                            <i class="fas fa-chart-bar"></i>
+                            <p>Loading chart data...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card Generator Tab -->
+            <div class="tab-content" id="card-generator">
+                <div class="content-header">
+                    <h1>🛒 Product Card Generator</h1>
+                    <p>Create beautiful affiliate product cards in seconds</p>
+                </div>
+
+                <div class="card-generator-instructions">
+                    <h3>📋 How to Use:</h3>
+                    <ol>
+                        <li><strong>Product URL:</strong> Paste your affiliate link (EarnKaro, Amazon, Flipkart, etc.)</li>
+                        <li><strong>Image URL:</strong> Right-click on product image → "Copy image address" → Paste here</li>
+                        <li><strong>Product Details:</strong> Add product name, price, and rating</li>
+                        <li><strong>Generate:</strong> Click "Add Product" to create the card</li>
+                        <li><strong>Copy Code:</strong> Click "Copy HTML" to get the code for your website</li>
+                    </ol>
+                </div>
+
+                <div id="cardAlert" class="card-alert"></div>
+
+                <div class="card-generator-main">
+                    <div class="card-form-section">
+                        <h2>📝 Product Details</h2>
+                        
+                        <div class="form-group">
+                            <label>Product URL <span style="color: #e74c3c;">*</span></label>
+                            <input type="url" id="cardProductUrl" placeholder="https://www.flipkart.com/product/...">
+                            <small>Your affiliate or product link where users will be redirected</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Image URL <span style="color: #e74c3c;">*</span></label>
+                            <input type="url" id="cardImageUrl" placeholder="https://rukminim2.flixcart.com/image/...">
+                            <small>Right-click on product image → Copy image address</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Product Name <span style="color: #e74c3c;">*</span></label>
+                            <input type="text" id="cardProductName" placeholder="Apple iPhone 15 (Black, 256 GB)">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Price <span style="color: #e74c3c;">*</span></label>
+                            <input type="text" id="cardPrice" placeholder="₹69,900">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Rating</label>
+                            <input type="text" id="cardRating" value="4.5" placeholder="4.5">
+                        </div>
+
+                        <button class="btn-add" onclick="addProductCard()">
+                            <i class="fas fa-plus"></i> Add Product
+                        </button>
+                    </div>
+
+                    <div class="card-preview-section">
+                        <h2>👁️ Live Preview</h2>
+                        <div id="cardPreviewContainer">
+                            <div class="empty-state">
+                                <i class="fas fa-box" style="font-size: 4rem; color: #ccc; margin-bottom: 20px;"></i>
+                                <p>Fill the form to see preview</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="savedCardsSection" style="display: none; margin-top: 30px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2>💾 Saved Product Cards (<span id="cardCount">0</span>)</h2>
+                        <button class="btn-add" onclick="copyAllProductCards()" style="width: auto;">
+                            <i class="fas fa-copy"></i> Copy All HTML
+                        </button>
+                    </div>
+                    <div id="savedCardsGrid" class="saved-cards-grid"></div>
+                </div>
+            </div>
+                    </main> 
+                </div>
+
+    <!-- Add Product Modal -->
+    <div class="modal" id="addProductModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Product</h2>
+                <button class="close-modal" onclick="closeAddProductModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="addProductForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Product Name</label>
+                        <input type="text" name="name" required placeholder="Enter product name">
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select name="category" required>
+                            <option value="">Select Category</option>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Mobile">Mobile</option>
+                            <option value="Fashion Accessories">Fashion Accessories</option>
+                            <option value="Clothing">Clothing</option>
+                            <option value="Home & Kitchen">Home & Kitchen</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Platform</label>
+                        <select name="platform" required>
+                            <option value="">Select Platform</option>
+                            <option value="Amazon">Amazon</option>
+                            <option value="Flipkart">Flipkart</option>
+                            <option value="Myntra">Myntra</option>
+                            <option value="Meesho">Meesho</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Price (₹)</label>
+                        <input type="number" name="price" required placeholder="Original price" min="0">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Discounted Price (₹)</label>
+                        <input type="number" name="discounted_price" required placeholder="After discount" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Discount %</label>
+                        <input type="number" name="discount_percent" required placeholder="Discount percentage" min="0" max="100">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Rating</label>
+                        <input type="number" name="rating" step="0.1" min="0" max="5" value="4.0" placeholder="0-5">
+                    </div>
+                    <div class="form-group">
+                        <label>Stock</label>
+                        <input type="number" name="stock" min="0" value="100" placeholder="Available stock">
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeAddProductModal()">Cancel</button>
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-plus"></i> Add Product
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div> 
+
+
+    <div class="modal" id="editProductModal"> 
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Edit Product</h2>
+            <button class="close-modal" onclick="closeEditProductModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form id="editProductForm">
+            <input type="hidden" name="product_id" id="editProductId">
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Product Name</label>
+                    <input type="text" name="name" id="editProductName" required>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <input type="text" name="category" id="editProductCategory" required>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Platform</label>
+                    <input type="text" name="platform" id="editProductPlatform" required>
+                </div>
+                <div class="form-group">
+                    <label>Price (₹)</label>
+                    <input type="number" name="price" id="editProductPrice" required min="0">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Discounted Price (₹)</label>
+                    <input type="number" name="discounted_price" id="editProductDiscountedPrice" required min="0">
+                </div>
+                <div class="form-group">
+                    <label>Discount %</label>
+                    <input type="number" name="discount_percent" id="editProductDiscount" required min="0" max="100">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Rating</label>
+                    <input type="number" name="rating" id="editProductRating" step="0.1" min="0" max="5">
+                </div>
+                <div class="form-group">
+                    <label>Stock</label>
+                    <input type="number" name="stock" id="editProductStock" min="0">
+                </div>
+            </div>
+            
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeEditProductModal()">Cancel</button>
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notificationText">Action completed successfully</span>
+    </div>
+
+    <script src="{{ url_for('static', filename='admin.js') }}"></script>
+</body>
+</html>
